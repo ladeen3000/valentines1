@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-image: url('HD-wallpaper-sunset-over-flower-field.png');
+            position: relative;
+        }
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+        .active-page {
+            opacity: 1;
+            visibility: visible;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 0 1rem;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.2);
+            text-align: center;
+        }
+        button {
+            padding: 1rem 2rem;
+            margin: 1rem;
+            border: none;
+            background: #8a2be2;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #ff4d6d;
+            transform: scale(1.05);
+        }
+        /* Falling tulips */
+        .falling-tulip {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: fall linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 77, 109, 0.8));
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        /* Glowing tulips */
+        .glow-tulip {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: glow 3s ease-in-out infinite;
+            opacity: 0.5;
+        }
+        @keyframes glow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        /* Falling tulips container */
+        #fallingTulips {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        /* Music player */
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Falling tulips container -->
+    <div id="fallingTulips"></div>
+    <!-- Glowing tulips -->
+    <div class="glow-tulip" style="top: 10%; left: 10%; background-image: url('https://www.pngmart.com/files/12/Red-Tulip-Transparent-Background.png');"></div>
+    <div class="glow-tulip" style="top: 20%; right: 15%; background-image: url('https://www.pngmart.com/files/12/Red-Tulip-Transparent-Background.png');"></div>
+    <div class="glow-tulip" style="bottom: 15%; left: 20%; background-image: url('https://www.pngmart.com/files/12/Red-Tulip-Transparent-Background.png');"></div>
+    
+    <!-- Page 1: Greeting -->
+    <div class="page active-page" id="greetingPage">
+        <div class="container">
+            <h1>Hi, Mahal! How are you doin' today?</h1>
+            <p>Please click "Yes" if you're okay.</p>
+            <button onclick="nextPage('complimentPage')">Yes!</button>
+        </div>
+    </div>
+    <!-- Page 2: Compliment -->
+    <div class="page" id="complimentPage">
+        <div class="container">
+            <h1>I just want to let you know...</h1>
+            <p>You're the most gorgeous person I know! 😍</p>
+            <button onclick="nextPage('musicPage')">Kilig!!!</button>
+        </div>
+    </div>
+    <!-- Page 3: Music -->
+    <div class="page" id="musicPage">
+        <div class="container">
+            <h1>I just want to ask you a question...</h1>
+            <p>But first, let's set the mood. Click below to turn on the music! 🎵</p>
+            <button onclick="playMusic()">Turn On Music</button>
+        </div>
+    </div>
+    <!-- Page 4: Emoji Page -->
+    <div class="page" id="emojiPage">
+        <div class="container">
+            <h1>💖🎶✨</h1>
+            <p>Because every moment with you feels like this... ❤️‍🔥🎵</p>
+            <button onclick="nextPage('finalQuestionPage')">Continue</button>
+        </div>
+    </div>
+    <!-- Page 5: Final Question -->
+    <div class="page" id="finalQuestionPage">
+        <div class="container">
+            <h1>My dearest Ms. Cha Hae-in of my life,</h1>
+            <p>The radiant light of my existence, would you honor me by becoming my forever Valentine? 🌹🌹🌹</p>
+            <div>
+                <button onclick="showMessage()">Yes!</button>
+                <button onclick="showMessage()">Ultimately Yes!!!</button>
+            </div>
+        </div>
+    </div>
+    <!-- Message Page -->
+    <div class="page" id="messagePage">
+        <div class="container">
+            <h2 style="color: #ff4d6d;">Thank you, Mahal! 🌹💖</h2>
+            <p>Across oceans and time zones, my soul finds its compass in you. 🌹<br>
+            Every moment apart fuels my anticipation for our next embrace.<br>
+            <button onclick="goBack()">Relive This Moment</button>
+        </div>
+    </div>
+    <!-- Audio Player -->
+    <audio id="backgroundMusic" src="https://dl.dropboxusercontent.com/scl/fi/lzk91jtzrhu472a3xnmtv/Sa-Bawat-Sandali-Amiel-Sol-Official-Lyric-Video-ezmp3.cc.mp3?rlkey=xtgt140hj73ti7zh8ksdtgydy&st=u9ybs0wy&dl=1" loop></audio>
+    <script>
+        // Function to navigate to the next page
+        function nextPage(pageId) {
+            const currentPage = document.querySelector('.active-page');
+            const nextPage = document.getElementById(pageId);
+            currentPage.classList.remove('active-page');
+            nextPage.classList.add('active-page');
+        }
+
+        // Function to play music and transition to emoji page
+        function playMusic() {
+            const music = document.getElementById('backgroundMusic');
+            music.play(); // Start playing the music
+            nextPage('emojiPage');
+        }
+
+        // Function to show the message page
+        function showMessage() {
+            document.getElementById('finalQuestionPage').classList.remove('active-page');
+            document.getElementById('messagePage').classList.add('active-page');
+        }
+
+        // Function to return to the greeting page
+        function goBack() {
+            document.getElementById('messagePage').classList.remove('active-page');
+            document.getElementById('greetingPage').classList.add('active-page');
+        }
+
+        // Create falling tulips
+        function createFallingTulips() {
+            const container = document.getElementById('fallingTulips');
+            for (let i = 0; i < 10; i++) {
+                const tulip = document.createElement('div');
+                tulip.className = 'falling-tulip';
+                tulip.style.left = Math.random() * 100 + 'vw';
+                tulip.style.animationDuration = 5 + Math.random() * 5 + 's';
+                tulip.style.backgroundImage = "url('https://www.pngmart.com/files/12/Red-Tulip-Transparent-Background.png')";
+                tulip.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
+                container.appendChild(tulip);
+            }
+        }
+
+        // Initialize animations after DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createFallingTulips();
+        });
+    </script>
+</body>
+</html>
